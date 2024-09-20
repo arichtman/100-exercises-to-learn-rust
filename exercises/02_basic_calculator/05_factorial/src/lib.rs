@@ -9,6 +9,9 @@
 // `factorial(2)` to return `2`, and so on.
 //
 // Use only what you learned! No loops yet, so you'll have to use recursion!
+fn factorial(n: u32) -> u32 {
+    (1..=n).into_iter().fold(1, |c, v| c * v)
+}
 
 #[cfg(test)]
 mod tests {
