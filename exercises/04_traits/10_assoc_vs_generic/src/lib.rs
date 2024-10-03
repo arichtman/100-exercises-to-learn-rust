@@ -13,6 +13,40 @@
 // You don't have to though: it's perfectly okay to write three separate
 // implementations manually. Venture further only if you're curious.
 
+/*
+I'm not clear on this one really.
+*/
+
+// Ok so generic trait over type T...
+pub trait Power<T> {
+    fn power(&self, exponent: T) -> Self;
+}
+
+// We're... allowed... to implement the trait for a type defined elsewhere because... we define the trait, I think.
+impl Power<u32> for u32 {
+    fn power(&self, exponent: u32) -> Self {
+        self.pow(exponent)
+    }
+}
+
+// And we need a different implementation for every type
+impl Power<u16> for u32  {
+    fn power(&self, exponent: u16) -> Self {
+        // ... but `pow` requires a u32, and there's no deref trait linking u16 to u32 cause that's a big assumption
+        self.pow(exponent.into())
+    }
+}
+// but we need yet _another_ implementation for references passed.
+// ... because how you'd work with an owned type is different
+impl Power<&u32> for u32 {
+    fn power(&self, exponent: &u32) -> Self {
+        self.pow(*exponent)
+    }
+}
+
+// Ok I think i get that a little better.
+// Still not sure why they return owned Self but take &self as parameters
+
 #[cfg(test)]
 mod tests {
     use super::Power;

@@ -1,5 +1,7 @@
 use std::cmp::PartialEq;
 
+// He's hackiiiiing
+#[derive(PartialEq)]
 struct Ticket {
     title: String,
     description: String,
@@ -8,7 +10,16 @@ struct Ticket {
 
 // TODO: Implement the `PartialEq` trait for `Ticket`.
 
-impl PartialEq for Ticket {}
+// impl PartialEq for Ticket {
+// fn eq(&self, other: &Self) -> bool {
+// // I wanted to destructure into tuples here to make the comparison nicer
+// // The book shows it but it's still clunkier than I wanted
+// let title_comp = self.title == other.title;
+// let desc_comp = self.description == other.description;
+// let status_comp = self.status == other.status;
+// title_comp && desc_comp && status_comp
+//     }
+// }
 
 #[cfg(test)]
 mod tests {
