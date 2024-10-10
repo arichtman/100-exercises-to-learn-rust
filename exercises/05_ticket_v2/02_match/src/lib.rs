@@ -4,12 +4,20 @@ enum Shape {
     Rectangle,
     Triangle,
     Pentagon,
+    Rhomboid,
 }
 
 impl Shape {
-    // TODO: Implement the `n_sides` method using a `match`.
     pub fn n_sides(&self) -> u8 {
-        todo!()
+        use Shape::*;
+        match &self {
+            // I'll die on the hill that a circle has one side
+            Circle => 0,
+            Pentagon => 5,
+            Triangle => 3,
+            Square | Rectangle | Rhomboid => 4,
+            _ => panic!(),
+        }
     }
 }
 

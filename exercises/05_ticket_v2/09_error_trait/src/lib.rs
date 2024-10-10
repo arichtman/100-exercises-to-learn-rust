@@ -3,9 +3,36 @@
 //  The docs for the `std::fmt` module are a good place to start and look for examples:
 //  https://doc.rust-lang.org/std/fmt/index.html#write
 
+// use std::error::Error;
+use std::{
+    error::Error as etrait,
+    fmt::{Debug, Display, Error, Formatter},
+};
+
 enum TicketNewError {
     TitleError(String),
     DescriptionError(String),
+}
+
+impl etrait for TicketNewError {}
+impl Debug for TicketNewError {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{:?}", *self)
+    }
+}
+
+impl Display for TicketNewError {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        // this forced use of match to destructure sucks.
+        // I don't know how to destructure over all variants though
+        // I suspect you can't because that'd have to be generic...
+        // ...which the implementation would look... not unlike this...
+        let s = match &self {
+            TicketNewError::TitleError(s) => s,
+            TicketNewError::DescriptionError(s) => s,
+        };
+        write!(f, "{}", s)
+    }
 }
 
 // TODO: `easy_ticket` should panic when the title is invalid, using the error message
@@ -13,7 +40,16 @@ enum TicketNewError {
 //   When the description is invalid, instead, it should use a default description:
 //   "Description not provided".
 fn easy_ticket(title: String, description: String, status: Status) -> Ticket {
-    todo!()
+    // the clone and nesting here feels kinda jank...
+    match Ticket::new(title.clone(), description, status.clone()) {
+        Err(TicketNewError::DescriptionError(_)) => Ticket {
+            title,
+            description: "Description not provided".into(),
+            status,
+        },
+        Err(TicketNewError::TitleError(e_desc)) => panic!("{}", e_desc),
+        Ok(t) => t,
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]

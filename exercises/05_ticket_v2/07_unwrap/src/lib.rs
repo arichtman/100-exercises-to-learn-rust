@@ -1,8 +1,17 @@
 // TODO: `easy_ticket` should panic when the title is invalid.
 //   When the description is invalid, instead, it should use a default description:
 //   "Description not provided".
+
 fn easy_ticket(title: String, description: String, status: Status) -> Ticket {
-    todo!()
+    // Unsure if there's a nicer way like coalescing values
+    let mut d = description.clone();
+    // Copying the validation logic is eeeh
+    // I see they intended for me to use match as I had initially but matching on strings...
+    let d = match description.is_empty() || description.len() > 500 {
+        false => description,
+        true => "Description not provided".into(),
+    };
+    Ticket::new(title, d, status).unwrap()
 }
 
 #[derive(Debug, PartialEq, Clone)]

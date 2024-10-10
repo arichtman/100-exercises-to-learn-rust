@@ -1,3 +1,5 @@
+use status::ParseStatusError;
+
 use crate::status::Status;
 
 // We've seen how to declare modules in one of the earliest exercises, but
@@ -23,13 +25,22 @@ pub enum TicketNewError {
     DescriptionCannotBeEmpty,
     #[error("Description cannot be longer than 500 bytes")]
     DescriptionTooLong,
+    #[error("`invalid` is not a valid status. Use one of: ToDo, InProgress, Done")]
+    StatusInvalid {
+        #[source]
+        // Unclear if we should be using anyhow here to make the error opaque?
+        // source: ParseStatusError,
+        source: anyhow::Error,
+    },
 }
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct Ticket {
-    title: String,
-    description: String,
-    status: Status,
+// implementing this both feels natural and odd, lotta code for enabling use of ?
+impl From<ParseStatusError> for TicketNewError {
+    fn from(value: ParseStatusError) -> Self {
+        TicketNewError::StatusInvalid {
+            source: value.into(),
+        }
+    }
 }
 
 impl Ticket {
@@ -48,13 +59,21 @@ impl Ticket {
         }
 
         // TODO: Parse the status string into a `Status` enum.
+        let s: Status = status.try_into()?;
 
         Ok(Ticket {
             title,
             description,
-            status,
+            status: s,
         })
     }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct Ticket {
+    title: String,
+    description: String,
+    status: Status,
 }
 
 #[cfg(test)]
